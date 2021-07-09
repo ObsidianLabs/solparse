@@ -12,8 +12,9 @@ function peg$subclass(child, parent) {
   child.prototype = new ctor();
 }
 
-function peg$SyntaxError(message, expected, found, location) {
+function peg$SyntaxError(message, result, expected, found, location) {
   this.message  = message;
+  this.result   = result;
   this.expected = expected;
   this.found    = found;
   this.location = location;
@@ -1578,6 +1579,7 @@ function peg$parse(input, options) {
 
     throw peg$buildStructuredError(
       [peg$otherExpectation(description)],
+      null,
       input.substring(peg$savedPos, peg$currPos),
       location
     );
@@ -1672,12 +1674,13 @@ function peg$parse(input, options) {
   }
 
   function peg$buildSimpleError(message, location) {
-    return new peg$SyntaxError(message, null, null, location);
+    return new peg$SyntaxError(message, null, null, null, location);
   }
 
-  function peg$buildStructuredError(expected, found, location) {
+  function peg$buildStructuredError(expected, result, found, location) {
     return new peg$SyntaxError(
       peg$SyntaxError.buildMessage(expected, found),
+      result,
       expected,
       found,
       location
@@ -21472,6 +21475,7 @@ function peg$parse(input, options) {
 
     throw peg$buildStructuredError(
       peg$maxFailExpected,
+      peg$result,
       peg$maxFailPos < input.length ? input.charAt(peg$maxFailPos) : null,
       peg$maxFailPos < input.length
         ? peg$computeLocation(peg$maxFailPos, peg$maxFailPos + 1)
